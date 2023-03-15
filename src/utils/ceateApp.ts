@@ -13,26 +13,22 @@ export default function createApp(DATABASE_URL: string, NODE_ENV: string, PORT: 
         PORT
     };
 
-    if (modules.length > 0) {
-        modules.forEach((appModule: Appmodule) => {
-            console.log(`registering ${appModule.name} appModule`);
-            appModule.register(app);
-        });
-    }
-       
+    modules.length > 0 && modules.forEach((appModule: Appmodule) => {
+        console.log(`registering ${appModule.name} appModule`);
+        appModule.register(app);
+    });
 
-    
     app.use((error: any, _req: any, res: any, _next: any) => {
         const { statusCode, type, message, errors } = error;
-        
+
         if (error) {
-            res.status(400).send({errors: [{ message }], message});
+            res.status(400).send({ errors: [{ message }], message });
         } else if (type === 'entity.parse.failed') {
             console.error('error', error);
-            res.status(400).send({message: 'Invalid payload'});
+            res.status(400).send({ message: 'Invalid payload' });
         } else {
             console.error('error', error);
-            res.status(statusCode || 500).send({message: 'Unkown server error'});
+            res.status(statusCode || 500).send({ message: 'Unkown server error' });
         }
     });
 
@@ -53,5 +49,4 @@ export default function createApp(DATABASE_URL: string, NODE_ENV: string, PORT: 
         listen,
         getServer,
     }
-
 }
