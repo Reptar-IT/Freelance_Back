@@ -1,7 +1,7 @@
 import createApp from "./utils/ceateApp";
 import { DATABASE_URL, NODE_ENV, PORT } from "./utils/loadEnv";
+import general from "./modules/general";
 
-// add modules in array [module, module, etc]
-const app = createApp(DATABASE_URL, NODE_ENV, PORT, []);
+const app = createApp(DATABASE_URL, NODE_ENV, PORT, [general]);
 
 app.listen();
