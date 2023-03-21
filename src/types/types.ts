@@ -1,11 +1,11 @@
-export interface Bid {
+export interface Offer {
     jobId: number;
     description: string;
     status: string;
     creator: User;
 }
 
-export interface Milestone {
+export interface Task {
     jobId: number;
     description?: string;
     price: number;
@@ -14,7 +14,7 @@ export interface Milestone {
     solutionProvider: User;
 }
 
-export interface Review {
+export interface Summary {
     strongCommunicationSkills: boolean;
     punctual: boolean;
     integrity: boolean;
@@ -53,17 +53,17 @@ export interface UserProfile {
     entityType: string; // organization or indiviual (auto-filled)
 }
 
-export interface Job {
+export interface Project {
     workType: string;
     title: string;
     description: string;
     budget: string;
     skills: string[];
     status: string;
-    bids?: Bid[];
-    milestones?: Milestone[];
-    end: Date;
-    review?: Review[];
-    solutionProvider?: User;
-    creator: User;
+    bids?: Offer[];
+    milestones?: Task[];
+    end: string;
+    review?: Summary;
+    solutionProvider?: string;
+    creator: string;
 }
