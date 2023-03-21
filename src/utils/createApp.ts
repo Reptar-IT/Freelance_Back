@@ -36,7 +36,7 @@ export default function createApp(DATABASE_URL: string, NODE_ENV: string, PORT: 
         return new Promise(resolve => {
             app.listen(PORT, () => {
                 resolve('');
-                console.log(`listening: http://localhost${PORT}`);
+                console.log(`listening: http://localhost:${PORT}`);
             });
         });
     }
