@@ -1,4 +1,3 @@
-// jshint esversion:6
 import { ServerApiVersion, ConnectOptions } from 'mongodb';
 import mongoose from "mongoose"; 
 
