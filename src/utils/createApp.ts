@@ -8,6 +8,8 @@ export default function createApp(DATABASE_URL: string, NODE_ENV: string, PORT: 
     console.log('creating express app');
 
     const app = express();
+    
+    app.use(express.json());
 
     app.locals.env = {
         PORT
@@ -21,7 +23,7 @@ export default function createApp(DATABASE_URL: string, NODE_ENV: string, PORT: 
     app.use((error: any, _req: any, res: any, _next: any) => {
         const { statusCode, type, message, errors } = error;
 
-        if (error) {
+        if (errors) {
             res.status(400).send({ errors: [{ message }], message });
         } else if (type === 'entity.parse.failed') {
             console.error('error', error);
@@ -36,7 +38,7 @@ export default function createApp(DATABASE_URL: string, NODE_ENV: string, PORT: 
         return new Promise(resolve => {
             app.listen(PORT, () => {
                 resolve('');
-                console.log(`listening: http://localhost${PORT}`);
+                console.log(`listening: http://localhost:${PORT} (${NODE_ENV})`);
             });
         });
     }
