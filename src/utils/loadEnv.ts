@@ -11,6 +11,10 @@ const env = cleanEnv(process.env, {
     NODE_ENV: str({default: 'development'}),
     ORIGIN: str(),
     PORT: port(),
+    DB_USER: str(),
+    DB_PASSWORD: str(),
+    DB_APP_NAME: str(),
+    MONGODB_URI: str(),
 });
 
 export const { DATABASE_URL, NODE_ENV, ORIGIN, PORT } = env;
