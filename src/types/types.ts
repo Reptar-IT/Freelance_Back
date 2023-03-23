@@ -1,8 +1,9 @@
 export interface Offer {
-    jobId: number;
     description: string;
-    status: string;
-    creator: User;
+    amount: number;
+    jobId: string;
+    status: boolean;
+    creator: string;
 }
 
 export interface Task {
