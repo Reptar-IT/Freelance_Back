@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const timestamps = { timestamps: { createdAt: "created_at", updatedAt: "updated_at" } };
 const Schema = mongoose.Schema;
 
-// Create schemas
 const jobSchema = new Schema(
     {
         workType: String,
@@ -49,5 +48,4 @@ const jobSchema = new Schema(
     timestamps
 );
 
-// Create  model
 export const Job = mongoose.model("Job", jobSchema);
