@@ -1,13 +1,13 @@
 import { Application } from "express";
 
-import jobsController from './jobsController'
+import bidsController from './bidsController'
 
 export default {
-    name: 'Job',
+    name: 'Bid',
     register(app: Application) {
-        const moduleBaseUrl = '/jobs';
+        const moduleBaseUrl = '/bids';
 
-        jobsController.register(`${moduleBaseUrl}`, app)
+        bidsController.register(`${moduleBaseUrl}`, app)
 
         app.use(`${moduleBaseUrl}/*`, (_req, res) => {
             res.status(404).end();
