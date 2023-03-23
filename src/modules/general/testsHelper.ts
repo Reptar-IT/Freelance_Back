@@ -1,6 +1,6 @@
 import { constants as HTTP_CODES } from "http2";
 
-export const getUser = () => {
+export const getTest = () => {
     const record: any = [];
-    return { code: 200, record }
+    return { code: HTTP_CODES.HTTP_STATUS_OK, record }
 }
