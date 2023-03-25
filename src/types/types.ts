@@ -9,7 +9,8 @@ export interface Offer {
 export interface Task {
     jobId: number;
     description?: string;
-    price: number;
+    awardAmount: number;
+    stableCoin: string,
     status: boolean;
     creator: User;
     solutionProvider: User;
