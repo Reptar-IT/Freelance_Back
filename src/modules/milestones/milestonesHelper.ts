@@ -1,45 +1,45 @@
 import { constants as HTTP_CODES } from "http2";
-import { Job, Milestone } from "../../../mongodb/schemas/index"
+import { createMilestone, deleteManyMilestonesByJobId, deleteMilestoneById, getAllMilestones, getJobById, getMilestoneById, getMilestonesByJobId } from "../../utils/queries"
 import { Offer } from "../../types/types"
 
-export const create = async (record: Offer) => {
-    if (!await Job.findById(record.jobId)) return { code: 400, message: `The Project ID ${record.jobId} Does not exist` }
+export const getAll = async () => ({ code: HTTP_CODES.HTTP_STATUS_OK, records: await getAllMilestones() });
 
-    return { code: HTTP_CODES.HTTP_STATUS_OK, records: await (new Milestone(record)).save() }
-}
+export const create = async (record: Offer) => {
+    const { jobId } = record;
+    const jobs: any = await getJobById(jobId);
+    if (jobs.code) return { code: jobs.code, message: `The Project ID ${jobId} Does not exist` }
+
+    return { code: HTTP_CODES.HTTP_STATUS_OK, records: await createMilestone(record) }
+};
 
 export const getById = async (id: string) => {
-    const records: any = await Milestone.findById(id);
+    const milestone: any = await getMilestoneById(id);
+    if (milestone.code) return milestone;
 
-    if (!records) return { code: 400, message: `The Milestone ID ${id} Does not exist` }
-
-    return { code: HTTP_CODES.HTTP_STATUS_OK, records}
-}
+    return { code: HTTP_CODES.HTTP_STATUS_OK, records: milestone }
+};
 
 export const getTasksByTaskId = async (id: string) => {
-    const records: any = await Milestone.find({jobId: id});
+    const milestones: any = await getMilestonesByJobId(id);
+    if (milestones.code) return milestones;
 
-    if (!records) return { code: 400, message: `Milestone with Project ID ${id} Does not exist` }
+    const jobs: any = await getJobById(id);
 
-    if (!await Job.findById(id)) {
-        await Milestone.deleteMany({jobId: id});
+    if (jobs.code) {
+        await deleteManyMilestonesByJobId({ id });
 
-        return {code: 400, message: `The Project ID ${id} No longer exist` } 
+        return { code: jobs.code, message: `The Project ID ${id} No longer exist` }
     };
 
-    return { code: HTTP_CODES.HTTP_STATUS_OK, records }
-}
-
-export const getAll = async () => ({ code: HTTP_CODES.HTTP_STATUS_OK, records: await Milestone.find({}) });
+    return { code: HTTP_CODES.HTTP_STATUS_OK, records: milestones }
+};
 
 export const deleteTaskById = async (id: string) => {
-    const record: any = await Milestone.findById(id);
+    const milestone: any = await getMilestoneById(id);
+    if (milestone.code) return milestone;
 
-    if (!record) return { code: 400, message: `ID ${id} Does not exist` };
-
-    await Milestone.findByIdAndDelete(id);
-
+    await deleteMilestoneById(id);
     return {
         code: HTTP_CODES.HTTP_STATUS_OK, message: `ID ${id} Deleted Successfully`
     }
-}
+};

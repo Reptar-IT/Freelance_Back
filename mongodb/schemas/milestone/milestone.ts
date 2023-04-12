@@ -26,6 +26,10 @@ const mileStoneSchema = new Schema(
         solutionProvider: {
             type: String,
             max: 30
+        },
+        employer: {
+            type: String,
+            max: 30
         }
     },
     timestamps

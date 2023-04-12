@@ -1,44 +1,44 @@
 import { constants as HTTP_CODES } from "http2";
-import { Job, Bid } from "../../../mongodb/schemas/index"
 import { Offer } from "../../types/types"
+import { createBid, deleteManyBidsByJobId, getAllBids, getBidById, getJobById } from "../../utils/queries";
 
 export const create = async (record: Offer) => {
-    if (!await Job.findById(record.jobId)) return { code: 400, message: `The Project ID ${record.jobId} Does not exist` }
+    const { jobId } = record;
+    const jobs: any = await getJobById(jobId);
+    if (jobs.code) return { code: jobs.code, message: `The Project ID ${jobId} Does not exist` }
 
-    return { code: HTTP_CODES.HTTP_STATUS_OK, records: await (new Bid(record)).save() }
+    return { code: HTTP_CODES.HTTP_STATUS_OK, records: await createBid(record) }
 }
 
 export const getById = async (id: string) => {
-    const records: any = await Bid.findById(id);
+    const bids: any = await getBidById(id);
+    if (bids.code) return bids;
 
-    if (!records) return { code: 400, message: `The Bid ID ${id} Does not exist` }
-
-    return { code: HTTP_CODES.HTTP_STATUS_OK, records}
+    return { code: HTTP_CODES.HTTP_STATUS_OK, records: bids }
 }
 
-export const getBidsByJobId = async (id: string) => {
-    const records: any = await Bid.find({jobId: id});
+export const getBidsByJobId = async (jobId: string) => {
+    const bids: any = await getBidsByJobId(jobId);
+    if (bids.code) return bids;
+ 
+    const jobs: any = await getJobById(jobId);
 
-    if (!records) return { code: 400, message: `Bid with Project ID ${id} Does not exist` }
+    if (jobs.code) {
+        await deleteManyBidsByJobId({jobId});
 
-    if (!await Job.findById(id)) {
-        await Bid.deleteMany({jobId: id});
-
-        return {code: 400, message: `The Project ID ${id} No longer exist` } 
+        return {code: 400, message: `The Project ID ${jobId} No longer exist` } 
     };
 
-    return { code: HTTP_CODES.HTTP_STATUS_OK, records }
+    return { code: HTTP_CODES.HTTP_STATUS_OK, records: bids }
 }
 
-export const getAll = async () => ({ code: HTTP_CODES.HTTP_STATUS_OK, records: await Bid.find({}) });
+export const getAll = async () => ({ code: HTTP_CODES.HTTP_STATUS_OK, records: await getAllBids() });
 
 export const deleteBidById = async (id: string) => {
-    const record: any = await Bid.findById(id);
+    const bids: any = await getBidById(id);
+    if (bids.code) return bids;
 
-    if (!record) return { code: 400, message: `ID ${id} Does not exist` };
-
-    await Bid.findByIdAndDelete(id);
-
+    await deleteBidById(id);
     return {
         code: HTTP_CODES.HTTP_STATUS_OK, message: `ID ${id} Deleted Successfully`
     }

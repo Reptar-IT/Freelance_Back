@@ -14,6 +14,7 @@ export interface Task {
     status: boolean;
     creator: User;
     solutionProvider: User;
+    employer: User;
 }
 
 export interface Summary {
