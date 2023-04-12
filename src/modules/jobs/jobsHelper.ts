@@ -1,22 +1,20 @@
 import { constants as HTTP_CODES } from "http2";
-import { Job, Bid, Milestone } from "../../../mongodb/schemas/index"
 import { Project } from "../../types/types"
+import { createJob, getBidsByJobId, getMilestonesByJobId, getAllJobs, getJobById, deleteBidByJobId, deleteMilestoneByJobId } from "../../utils/queries"
 
-export const create = async (record: Project) => {
-  const job = new Job(record);
-  const records = await job.save();
-
-  return { code: HTTP_CODES.HTTP_STATUS_OK, records }
-}
+export const create = async (record: Project) => 
+ ({ code: HTTP_CODES.HTTP_STATUS_OK, records: await createJob(record) });
 
 const addToJobs = async (record: any, id: string) => {
-  const bids: any = await Bid.find({ jobId: id });
+  const bids: any = await getBidsByJobId(id);
+  if (bids.code) return bids;
 
   bids.forEach((bid: any) => {
     record.bids.push(bid);
   });
 
-  const milestones: any = await Milestone.find({ jobId: id });
+  const milestones: any = await getMilestonesByJobId(id);
+  if (milestones.code) return milestones;
 
   milestones.forEach((milestone: any) => {
     record.milestones.push(milestone);
@@ -24,36 +22,43 @@ const addToJobs = async (record: any, id: string) => {
 };
 
 export const getById = async (id: string) => {
-  const record: any = await Job.findById(id);
+  const jobs: any = await getJobById(id);
+  if (jobs.code) return jobs;
 
-  if (!record) return { code: 400, message: `ID ${id} Does not exist` }
-
-  await addToJobs(record, id);
-
-  return { code: HTTP_CODES.HTTP_STATUS_OK, records: record };
-}
+  await addToJobs(jobs, id);
+  return { code: HTTP_CODES.HTTP_STATUS_OK, records: jobs };
+};
 
 export const getAll = async () => {
-  const jobs: any = await Job.find({});
+  const jobs: any = await getAllJobs();
 
   const jobRecords = await Promise.all(jobs.map(async (record: any) => {
-
+    
     await addToJobs(record, record._id);
-
+    
     return record;
   }));
 
   return { code: HTTP_CODES.HTTP_STATUS_OK, records: jobRecords };
-}
+};
 
 export const deleteJobById = async (id: string) => {
-  const record: any = await Job.findById(id);
+  const jobs: any = await getJobById(id);
+  if (jobs.code) return jobs;
 
-  if (!record) return { code: 400, message: `ID ${id} Does not exist` };
+  const bids: any = await getBidsByJobId(id);
+  if (bids.code) return bids;
 
-  await Job.findByIdAndDelete(id);
+  const milestones: any = await getMilestonesByJobId(id);
+  if (milestones.code) return milestones;
+
+  if (bids.length != 0) bids.forEach(async () => (await deleteBidByJobId(id)));
+
+  if (milestones.length != 0) milestones.forEach(async () => (await deleteMilestoneByJobId(id)));
+
+  await deleteJobById(id);
 
   return {
     code: HTTP_CODES.HTTP_STATUS_OK, message: `ID ${id} Deleted Successfully`
   }
-}
+};
