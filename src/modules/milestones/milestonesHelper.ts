@@ -38,8 +38,5 @@ export const deleteTaskById = async (id: string) => {
     const milestone: any = await getMilestoneById(id);
     if (milestone.code) return milestone;
 
-    await deleteMilestoneById(id);
-    return {
-        code: HTTP_CODES.HTTP_STATUS_OK, message: `ID ${id} Deleted Successfully`
-    }
+    return await deleteMilestoneById(id);
 };

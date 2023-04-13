@@ -1,6 +1,6 @@
 import { constants as HTTP_CODES } from "http2";
 import { Offer } from "../../types/types"
-import { createBid, deleteManyBidsByJobId, getAllBids, getBidById, getJobById } from "../../utils/queries";
+import { createBid, deleteManyBidsByJobId, deleteOneBidById, getAllBids, getBidById, getJobById } from "../../utils/queries";
 
 export const create = async (record: Offer) => {
     const { jobId } = record;
@@ -38,8 +38,5 @@ export const deleteBidById = async (id: string) => {
     const bids: any = await getBidById(id);
     if (bids.code) return bids;
 
-    await deleteBidById(id);
-    return {
-        code: HTTP_CODES.HTTP_STATUS_OK, message: `ID ${id} Deleted Successfully`
-    }
+    return await deleteOneBidById(id);
 }

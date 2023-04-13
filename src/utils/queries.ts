@@ -1,62 +1,103 @@
-import { Job, Bid, Milestone } from "../../mongodb/schemas/index"
+import { Job, Bid, Milestone } from "../../mongodb/schemas/index";
 
-export const createJob = (record: any) => (new Job(record)).save();
+const createJob = (record: any) => new Job(record).save();
 
-export const getAllJobs = async () => await Job.find({});
+const getAllJobs = async () => await Job.find({});
 
-export const getJobById = async (jobId: any) => {
-    const jobs = await Job.findById(jobId);
-    if (!jobs) return { code: 400, message: `Job with ID ${jobId} Does not exist` };
+const getJobById = async (jobId: any) => {
+  const jobs = await Job.findById(jobId);
+  if (!jobs)
+    return { code: 400, message: `Job with ID ${jobId} Does not exist` };
 
-    return jobs;
-}
+  return jobs;
+};
 
-export const deleteJobById = async (jobId: any) => await Job.findByIdAndDelete(jobId);
+const deleteOneJobById = async (jobId: any) => {
+  await Job.findByIdAndDelete(jobId);
+  return { code: 200, message: `Job with ID ${jobId} has been deleted` };
+};
 
-export const getBidById = async (id: any) => {
-    const bids = await Bid.findById(id);
-    if (!bids) return { code: 400, message: `Bid with ID ${id} Does not exist` };
+const createBid = (record: any) => new Bid(record).save();
 
-    return bids;
-}
+const getAllBids = async () => await Bid.find({});
 
-export const getBidsByJobId = async (jobId: any) => {
-    const bids = await Bid.find({ jobId });
-    if (!bids) return { code: 400, message: `Bid with Job ID ${jobId} Does not exist` };
+const deleteBidByJobId = async (jobId: any) =>
+  await Bid.findOneAndDelete({ jobId });
 
-    return bids;
-}
+const deleteManyBidsByJobId = async (jobId: any) =>
+  await Milestone.deleteMany({ jobId });
 
-export const createBid = (record: any) => (new Bid(record)).save();
+const getBidById = async (id: any) => {
+  const bids = await Bid.findById(id);
+  if (!bids) return { code: 400, message: `Bid with ID ${id} Does not exist` };
 
-export const getAllBids = async () => await Bid.find({});
+  return bids;
+};
 
-export const deleteBidById = async (id: any) => Bid.findOneAndDelete({id});
+const getBidsByJobId = async (jobId: any) => {
+  const bids = await Bid.find({ jobId });
+  if (!bids)
+    return { code: 400, message: `Bid with Job ID ${jobId} Does not exist` };
 
-export const deleteBidByJobId = async (jobId: any) => Bid.findOneAndDelete({jobId});
+  return bids;
+};
 
-export const deleteManyBidsByJobId = async (jobId: any) => Milestone.deleteMany({jobId});
+const deleteOneBidById = async (id: any) => {
+  await Bid.findOneAndDelete({ id });
+  return { code: 200, message: `Bid with ID ${id} has been deleted` };
+};
 
-export const getMilestoneById = async (id: any) => {
-    const milestones = await Milestone.findById(id);
-    if (!milestones) return { code: 400, message: `Milestone with ID ${id} Does not exist` };
+const createMilestone = (record: any) => new Milestone(record).save();
 
-    return milestones;
-}
+const getAllMilestones = async () => await Milestone.find({});
 
-export const getMilestonesByJobId = async (jobId: any) => {
-    const milestones = await Milestone.find({ jobId });
-    if (!milestones) return { code: 400, message: `Milestone with Job ID ${jobId} Does not exist` };
+const deleteMilestoneByJobId = async (jobId: any) =>
+  await Milestone.findOneAndDelete({ jobId });
 
-    return milestones;
-}
+const deleteManyMilestonesByJobId = async (jobId: any) =>
+  await Milestone.deleteMany({ jobId });
 
-export const createMilestone = (record: any) => (new Milestone(record)).save();
+const getMilestoneById = async (id: any) => {
+  const milestones = await Milestone.findById(id);
+  if (!milestones)
+    return { code: 400, message: `Milestone with ID ${id} Does not exist` };
 
-export const getAllMilestones = async () => await Milestone.find({});
+  return milestones;
+};
 
-export const deleteMilestoneByJobId = async (jobId: any) => Milestone.findOneAndDelete({jobId});
+const getMilestonesByJobId = async (jobId: any) => {
+  const milestones = await Milestone.find({ jobId });
+  if (!milestones)
+    return {
+      code: 400,
+      message: `Milestone with Job ID ${jobId} Does not exist`,
+    };
 
-export const deleteMilestoneById = async (id: any) => Milestone.findOneAndDelete({id});
+  return milestones;
+};
 
-export const deleteManyMilestonesByJobId = async (jobId: any) => Milestone.deleteMany({jobId});
+const deleteMilestoneById = async (id: any) => {
+  await Milestone.findOneAndDelete({ id });
+  return { code: 200, message: `Milestone with ID ${id} has been deleted` };
+};
+
+export {
+  createJob,
+  getAllJobs,
+  getJobById,
+  deleteOneJobById,
+  createBid,
+  getAllBids,
+  deleteBidByJobId,
+  deleteManyBidsByJobId,
+  getBidById,
+  getBidsByJobId,
+  deleteOneBidById,
+  createMilestone,
+  getAllMilestones,
+  deleteMilestoneByJobId,
+  deleteManyMilestonesByJobId,
+  getMilestoneById,
+  getMilestonesByJobId,
+  deleteMilestoneById,
+};
