@@ -5,11 +5,10 @@ const createJob = (record: any) => new Job(record).save();
 const getAllJobs = async () => await Job.find({});
 
 const getJobById = async (jobId: any) => {
-  const jobs = await Job.findById(jobId);
-  if (!jobs)
-    return { code: 400, message: `Job with ID ${jobId} Does not exist` };
-
-  return jobs;
+  const job = await Job.findById(jobId);
+  return !job
+    ? { code: 400, message: `Job with ID ${jobId} Does not exist` }
+    : job;
 };
 
 const deleteOneJobById = async (jobId: any) => {
@@ -28,18 +27,17 @@ const deleteManyBidsByJobId = async (jobId: any) =>
   await Milestone.deleteMany({ jobId });
 
 const getBidById = async (id: any) => {
-  const bids = await Bid.findById(id);
-  if (!bids) return { code: 400, message: `Bid with ID ${id} Does not exist` };
-
-  return bids;
+  const bid = await Bid.findById(id);
+  return !bid
+    ? { code: 400, message: `Bid with ID ${id} Does not exist` }
+    : bid;
 };
 
 const getBidsByJobId = async (jobId: any) => {
   const bids = await Bid.find({ jobId });
-  if (!bids)
-    return { code: 400, message: `Bid with Job ID ${jobId} Does not exist` };
-
-  return bids;
+  return !bids
+    ? { code: 400, message: `Bid with ID ${jobId} Does not exist` }
+    : bids;
 };
 
 const deleteOneBidById = async (id: any) => {
@@ -58,22 +56,17 @@ const deleteManyMilestonesByJobId = async (jobId: any) =>
   await Milestone.deleteMany({ jobId });
 
 const getMilestoneById = async (id: any) => {
-  const milestones = await Milestone.findById(id);
-  if (!milestones)
-    return { code: 400, message: `Milestone with ID ${id} Does not exist` };
-
-  return milestones;
+  const milestone = await Milestone.findById(id);
+  return !milestone
+    ? { code: 400, message: `Milestone with ID ${id} Does not exist` }
+    : milestone;
 };
 
 const getMilestonesByJobId = async (jobId: any) => {
   const milestones = await Milestone.find({ jobId });
-  if (!milestones)
-    return {
-      code: 400,
-      message: `Milestone with Job ID ${jobId} Does not exist`,
-    };
-
-  return milestones;
+  return !milestones
+    ? { code: 400, message: `Milestone with Job ID ${jobId} Does not exist` }
+    : milestones;
 };
 
 const deleteMilestoneById = async (id: any) => {
