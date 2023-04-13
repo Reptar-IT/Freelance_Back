@@ -15,8 +15,7 @@ const bidSchema = new Schema(
       ref: "Job" 
     }, 
     status: {
-      type: Boolean, 
-      default: false
+      type: String, 
     },
     creator: { 
       type: String, 

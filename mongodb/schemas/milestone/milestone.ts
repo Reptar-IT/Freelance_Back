@@ -16,8 +16,7 @@ const mileStoneSchema = new Schema(
         awardAmount: Number,
         stableCoin: String,
         status: {
-            type: Boolean,
-            default: false
+            type: String,
         },
         creator: {
             type: String,
