@@ -1,9 +1,9 @@
 import { constants as HTTP_CODES } from "http2";
 import { Project } from "../../types/types"
-import { createJob, getBidsByJobId, getMilestonesByJobId, getAllJobs, getJobById, deleteBidByJobId, deleteMilestoneByJobId } from "../../utils/queries"
+import { createJob, getBidsByJobId, getMilestonesByJobId, getAllJobs, getJobById, deleteMilestoneByJobId, deleteBidByJobId, deleteOneJobById } from "../../utils/queries"
 
-export const create = async (record: Project) => 
- ({ code: HTTP_CODES.HTTP_STATUS_OK, records: await createJob(record) });
+export const create = async (record: Project) =>
+  ({ code: HTTP_CODES.HTTP_STATUS_OK, records: await createJob(record) });
 
 const addToJobs = async (record: any, id: string) => {
   const bids: any = await getBidsByJobId(id);
@@ -19,30 +19,31 @@ const addToJobs = async (record: any, id: string) => {
   milestones.forEach((milestone: any) => {
     record.milestones.push(milestone);
   });
+
+  return record;
 };
 
 export const getById = async (id: string) => {
   const jobs: any = await getJobById(id);
   if (jobs.code) return jobs;
 
-  await addToJobs(jobs, id);
-  return { code: HTTP_CODES.HTTP_STATUS_OK, records: jobs };
+  return { code: HTTP_CODES.HTTP_STATUS_OK, records: await addToJobs(jobs, id) };
 };
 
 export const getAll = async () => {
   const jobs: any = await getAllJobs();
 
   const jobRecords = await Promise.all(jobs.map(async (record: any) => {
-    
+
     await addToJobs(record, record._id);
-    
+
     return record;
   }));
 
   return { code: HTTP_CODES.HTTP_STATUS_OK, records: jobRecords };
 };
 
-export const deleteJobById = async (id: string) => {
+export const deleteJobById: any = async (id: string) => {
   const jobs: any = await getJobById(id);
   if (jobs.code) return jobs;
 
@@ -56,9 +57,5 @@ export const deleteJobById = async (id: string) => {
 
   if (milestones.length != 0) milestones.forEach(async () => (await deleteMilestoneByJobId(id)));
 
-  await deleteJobById(id);
-
-  return {
-    code: HTTP_CODES.HTTP_STATUS_OK, message: `ID ${id} Deleted Successfully`
-  }
+  return await deleteOneJobById(id);
 };
