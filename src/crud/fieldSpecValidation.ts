@@ -1,3 +1,9 @@
+export const modelName = {
+  bid: "Bid",
+  project: "Job",
+  milestone: "Milestone",
+};
+
 export const fieldSpecValidation = (
   fieldSpecifications: any,
   record: any,
@@ -38,8 +44,13 @@ export const fieldSpecValidation = (
                   (item: any) => !fieldSpec.validValues.includes(item)
                 )
               : field
-          } must be a valid value (${fieldSpec.validValues.slice(0, 3).join(", ")}, etc...)`,
-          spec: { ...fieldSpec, validValues: `${fieldSpec.validValues.slice(0, 3)} , etc...)`},
+          } must be a valid value (${fieldSpec.validValues
+            .slice(0, 3)
+            .join(", ")}, etc...)`,
+          spec: {
+            ...fieldSpec,
+            validValues: `${fieldSpec.validValues.slice(0, 3)} , etc...)`,
+          },
         });
       }
 

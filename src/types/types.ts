@@ -1,3 +1,7 @@
+export interface ModelObject {
+  [key: string]: any;
+}
+
 export interface Offer {
   description: string;
   amount: number;

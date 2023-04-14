@@ -15,20 +15,21 @@ export const milestoneFieldSpec = {
     updatable: true,
   },
   status: {
-    default: "pending",
+    default: 'PENDING',
+    validValues: ['PENDING', 'RELEASED'],
     required: true,
     updatable: true,
   },
   creator: {
-    default: "Fast Bidder",
+    default: 'Fast Bidder',
     required: true,
   },
   solutionProvider: {
-    default: "Fast Bidder",
+    default: 'Fast Bidder',
     required: true,
   },
   employer: {
-    default: "Reco",
+    default: 'Reco',
     required: true,
   },
 };
