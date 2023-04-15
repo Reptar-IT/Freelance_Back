@@ -11,23 +11,29 @@ export const fieldSpecValidation = (
 ) => {
   const specFieldNames = Object.keys(fieldSpecifications);
 
-  const conditionedSpecs =
+  const { conditionedSpecs, payloadRecord } =
     requestType === "PUT"
-      ? specFieldNames.filter(
-          (fieldName) => fieldSpecifications[fieldName].updatable
-        )
-      : specFieldNames;
-
-  const payloadRecord = requestType === "PUT" ? payload.record : payload;
+      ? {
+          conditionedSpecs: specFieldNames.filter(
+            (fieldName) => fieldSpecifications[fieldName].updatable
+          ),
+          payloadRecord: payload.record,
+        }
+      : { conditionedSpecs: specFieldNames, payloadRecord: payload };
 
   const invalidFields = Object.keys(payloadRecord).filter(
-    (fieldName) => !specFieldNames.includes(fieldName)
+    (fieldName) => !conditionedSpecs.includes(fieldName)
   );
 
   if (invalidFields.length > 0)
     return {
       code: 400,
-      errors: { invalidFields, message: `Invalid fields in payload` },
+      errors: {
+        invalidFields,
+        message: `Invalid${
+          requestType === "PUT" ? " or Non-Updatable" : ""
+        } fields in payload`,
+      },
     };
 
   const isValidPayload: any = conditionedSpecs.reduce(
