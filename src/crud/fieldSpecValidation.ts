@@ -26,7 +26,7 @@ export const fieldSpecValidation = (
     {}
   );
 
-  const validatedPayload: any = specifications.reduce(
+  const isValidPayload: any = specifications.reduce(
     (acc: any, fieldName: any) => {
       if (acc.errors && acc.errors.length > 0) return acc;
 
@@ -78,9 +78,9 @@ export const fieldSpecValidation = (
     []
   );
 
-  const record = isValidField.errors ? isValidField : validatedPayload;
+  const record = isValidField.errors ? isValidField : isValidPayload;
 
   return record.errors
     ? { code: 400, errors: record.errors }
-    : validatedPayload;
+    : isValidPayload;
 };
