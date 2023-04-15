@@ -13,23 +13,8 @@ import {
 
 const { project, bid, milestone } = modelName;
 
-export const updateJobById = async (id: string, payload: Project) => {
-  const validatedRecord = await fieldSpecValidation(
-    jobFieldSpec,
-    payload,
-    'PUT'
-  );
-
-  return validatedRecord.errors
-    ? { code: 400, errors: validatedRecord.errors }
-    : {
-        code: HTTP_CODES.HTTP_STATUS_OK,
-        records: await updateRecord(project, { _id: id }, validatedRecord),
-      };
-};
-
-export const create = async (payload: Project) => {
-  const validatedRecord = fieldSpecValidation(jobFieldSpec, payload, 'POST');
+export const create = async (payload: Project, reqType: string) => {
+  const validatedRecord = fieldSpecValidation(jobFieldSpec, payload, reqType);
 
   return validatedRecord.errors
     ? { code: 400, errors: validatedRecord.errors }
@@ -81,6 +66,25 @@ export const getAll = async () => {
   );
 
   return { code: HTTP_CODES.HTTP_STATUS_OK, records: jobRecords };
+};
+
+export const updateJobById = async (
+  id: string,
+  payload: Project,
+  reqType: string
+) => {
+  const validatedRecord = await fieldSpecValidation(
+    jobFieldSpec,
+    payload,
+    reqType
+  );
+
+  return validatedRecord.errors
+    ? { code: 400, errors: validatedRecord.errors }
+    : {
+        code: HTTP_CODES.HTTP_STATUS_OK,
+        records: await updateRecord(project, { _id: id }, validatedRecord),
+      };
 };
 
 export const deleteJobById: any = async (id: string) => {
