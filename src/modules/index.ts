@@ -1,6 +1,6 @@
-import general from "../modules/general";
+import demo from "../modules/demos";
 import job from "../modules/jobs";
 import bid from "../modules/bids";
 import milestone from "../modules/milestones";
 
-export { general, job, bid, milestone };
+export { demo, job, bid, milestone };
