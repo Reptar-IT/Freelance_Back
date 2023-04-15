@@ -9,40 +9,45 @@ export const fieldSpecValidation = (
   payload: any,
   requestType: string
 ) => {
-  const specifications = Object.keys(fieldSpecifications);
+  const specFieldNames = Object.keys(fieldSpecifications);
 
-  const isValidField = Object.keys(payload).reduce(
-    (acc: any, fieldName: any) => {
-      if (acc.errors) return acc;
+  const conditionedSpecs =
+    requestType === "PUT"
+      ? specFieldNames.filter(
+          (fieldName) => fieldSpecifications[fieldName].updatable
+        )
+      : specFieldNames;
 
-      if (!specifications.includes(fieldName))
-        acc.errors = {
-          fieldName: fieldName,
-          message: `${fieldName} is not a valid field name`,
-        };
+  const payloadRecord = requestType === "PUT" ? payload.record : payload;
 
-      return acc;
-    },
-    {}
+  const invalidFields = Object.keys(payloadRecord).filter(
+    (fieldName) => !specFieldNames.includes(fieldName)
   );
 
-  const isValidPayload: any = specifications.reduce(
-    (acc: any, fieldName: any) => {
+  if (invalidFields.length > 0)
+    return {
+      code: 400,
+      errors: { invalidFields, message: `Invalid fields in payload` },
+    };
+
+  const isValidPayload: any = conditionedSpecs.reduce(
+    (acc: any, specFieldName: any) => {
       if (acc.errors && acc.errors.length > 0) return acc;
 
-      const fieldSpec = fieldSpecifications[fieldName];
-      const field = payload[fieldName];
+      const fieldSpec = fieldSpecifications[specFieldName];
+      const field = payloadRecord[specFieldName];
 
-      if (fieldSpec.default && !field) payload[fieldName] = fieldSpec.default;
+      if (fieldSpec.default && !field)
+        payloadRecord[specFieldName] = fieldSpec.default;
 
-      acc = payload;
+      acc = payloadRecord;
 
-      if (fieldSpec.required && !payload[fieldName]) {
+      if (fieldSpec.required && !payloadRecord[specFieldName]) {
         if (!acc.errors) acc.errors = [];
 
         acc.errors.push({
-          fieldName,
-          message: `${fieldName} is required`,
+          specFieldName,
+          message: `${specFieldName} is required`,
           spec: fieldSpec,
         });
       }
@@ -56,8 +61,8 @@ export const fieldSpecValidation = (
         if (!acc.errors) acc.errors = [];
 
         acc.errors.push({
-          fieldName,
-          message: `${fieldName}: ${
+          specFieldName,
+          message: `${specFieldName}: ${
             fieldSpec.type === "List"
               ? field.filter(
                   (item: any) => !fieldSpec.validValues.includes(item)
@@ -78,9 +83,7 @@ export const fieldSpecValidation = (
     []
   );
 
-  const record = isValidField.errors ? isValidField : isValidPayload;
-
-  return record.errors
-    ? { code: 400, errors: record.errors }
+  return isValidPayload.errors
+    ? { code: 400, errors: isValidPayload.errors }
     : isValidPayload;
 };
