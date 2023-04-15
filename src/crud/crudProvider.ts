@@ -30,10 +30,17 @@ const deleteRecordById = async (name: string, id: any) => {
   return { code: 200, message: `${name} with ID ${id.id} has been deleted` };
 };
 
-// model[name].updateOne({_id: id});
+const updateRecord = async (name: string, id: any, payload: any) => {
+  const record = await model[name].findOneAndUpdate(id, payload, { new: true });
+
+  return !record
+    ? { code: 400, message: `${name} with ID ${id.id} Does not exist` }
+    : record;
+};
 
 export {
   createRecord,
+  updateRecord,
   getAllRecords,
   getRecordById,
   deleteRecordById,
