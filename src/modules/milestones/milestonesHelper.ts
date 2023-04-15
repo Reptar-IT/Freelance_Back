@@ -1,10 +1,7 @@
 import { constants as HTTP_CODES } from "http2";
 import { Offer } from "../../types/types";
 import { milestoneFieldSpec } from "./milestoneSpec";
-import {
-  modelName,
-  fieldSpecValidation,
-} from "../../crud/fieldSpecValidation";
+import { modelName, fieldSpecValidation } from "../../crud/fieldSpecValidation";
 import {
   createRecord,
   getAllRecords,
@@ -12,6 +9,7 @@ import {
   getAllRecordsByParams,
   deleteRecordById,
   deleteManyRecordsByParams,
+  updateRecord,
 } from "../../crud/crudProvider";
 
 const { project, milestone } = modelName;
@@ -66,6 +64,25 @@ export const getTasksByTaskId = async (id: string) => {
   }
 
   return { code: HTTP_CODES.HTTP_STATUS_OK, records: milestoneRecords };
+};
+
+export const updateMilestoneById = async (
+  id: string,
+  payload: Offer,
+  reqType: string
+) => {
+  const validatedRecord = await fieldSpecValidation(
+    milestoneFieldSpec,
+    payload,
+    reqType
+  );
+
+  return validatedRecord.errors
+    ? { code: 400, errors: validatedRecord.errors }
+    : {
+        code: HTTP_CODES.HTTP_STATUS_OK,
+        records: await updateRecord(milestone, { _id: id }, validatedRecord),
+      };
 };
 
 export const deleteTaskById = async (id: string) => {
