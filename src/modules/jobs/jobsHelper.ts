@@ -17,7 +17,7 @@ export const updateJobById = async (id: string, payload: Project) => {
   const validatedRecord = await fieldSpecValidation(
     jobFieldSpec,
     payload,
-    "PUT"
+    'PUT'
   );
 
   return validatedRecord.errors
@@ -29,7 +29,7 @@ export const updateJobById = async (id: string, payload: Project) => {
 };
 
 export const create = async (payload: Project) => {
-  const validatedRecord = fieldSpecValidation(jobFieldSpec, payload, "POST");
+  const validatedRecord = fieldSpecValidation(jobFieldSpec, payload, 'POST');
 
   return validatedRecord.errors
     ? { code: 400, errors: validatedRecord.errors }
