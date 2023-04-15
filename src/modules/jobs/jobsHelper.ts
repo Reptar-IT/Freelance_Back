@@ -1,12 +1,10 @@
 import { constants as HTTP_CODES } from "http2";
 import { Project } from "../../types/types";
 import { jobFieldSpec } from "./jobSpec";
-import {
-  modelName,
-  fieldSpecValidation,
-} from "../../crud/fieldSpecValidation";
+import { modelName, fieldSpecValidation } from "../../crud/fieldSpecValidation";
 import {
   createRecord,
+  updateRecord,
   getAllRecords,
   getRecordById,
   deleteRecordById,
@@ -15,8 +13,23 @@ import {
 
 const { project, bid, milestone } = modelName;
 
-export const create = async (record: Project) => {
-  const validatedRecord = fieldSpecValidation(jobFieldSpec, record, "POST");
+export const updateJobById = async (id: string, payload: Project) => {
+  const validatedRecord = await fieldSpecValidation(
+    jobFieldSpec,
+    payload,
+    "PUT"
+  );
+
+  return validatedRecord.errors
+    ? { code: 400, errors: validatedRecord.errors }
+    : {
+        code: HTTP_CODES.HTTP_STATUS_OK,
+        records: await updateRecord(project, { _id: id }, validatedRecord),
+      };
+};
+
+export const create = async (payload: Project) => {
+  const validatedRecord = fieldSpecValidation(jobFieldSpec, payload, "POST");
 
   return validatedRecord.errors
     ? { code: 400, errors: validatedRecord.errors }
