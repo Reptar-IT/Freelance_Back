@@ -6,19 +6,38 @@ export const modelName = {
 
 export const fieldSpecValidation = (
   fieldSpecifications: any,
-  record: any,
+  payload: any,
   requestType: string
 ) => {
-  const validatedRecord: any = Object.keys(fieldSpecifications).reduce(
+  const specifications = Object.keys(fieldSpecifications);
+
+  const isValidField = Object.keys(payload).reduce(
     (acc: any, fieldName: any) => {
+      if (acc.errors) return acc;
+
+      if (!specifications.includes(fieldName))
+        acc.errors = {
+          fieldName: fieldName,
+          message: `${fieldName} is not a valid field name`,
+        };
+
+      return acc;
+    },
+    {}
+  );
+
+  const validatedPayload: any = specifications.reduce(
+    (acc: any, fieldName: any) => {
+      if (acc.errors && acc.errors.length > 0) return acc;
+
       const fieldSpec = fieldSpecifications[fieldName];
-      const field = record[fieldName];
+      const field = payload[fieldName];
 
-      if (fieldSpec.default && !field) record[fieldName] = fieldSpec.default;
+      if (fieldSpec.default && !field) payload[fieldName] = fieldSpec.default;
 
-      acc = record;
+      acc = payload;
 
-      if (fieldSpec.required && !field) {
+      if (fieldSpec.required && !payload[fieldName]) {
         if (!acc.errors) acc.errors = [];
 
         acc.errors.push({
@@ -54,24 +73,14 @@ export const fieldSpecValidation = (
         });
       }
 
-      // todo: compare with existing record find by Id.
-      if (
-        requestType === "PUT" &&
-        !fieldSpec.updatable &&
-        record[fieldName] !== record[fieldName]
-      )
-        acc.errors.push({
-          fieldName,
-          message: `${fieldName} is not Updatable`,
-          spec: { ...fieldSpec, updatable: false },
-        });
-
       return acc;
     },
     []
   );
 
-  return validatedRecord.errors
-    ? { code: 400, errors: validatedRecord.errors }
-    : validatedRecord;
+  const record = isValidField.errors ? isValidField : validatedPayload;
+
+  return record.errors
+    ? { code: 400, errors: record.errors }
+    : validatedPayload;
 };
