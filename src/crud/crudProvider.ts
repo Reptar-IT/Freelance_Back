@@ -1,12 +1,12 @@
 import { ModelObject } from "../types/types";
-import { Job, Bid, Milestone } from "../../mongodb/schemas/index";
+import { Demo, Job, Bid, Milestone } from "../../mongodb/schemas/index";
 
-const model: ModelObject = { Job, Bid, Milestone };
+const model: ModelObject = { Demo, Job, Bid, Milestone };
 
 const createRecord = (name: string, record: any) =>
   new model[name](record).save();
 
-const getAllRecords = async (name: string) => await model[name].find({});
+const getAllRecords = async (name: string) => (await model[name].find({}));
 
 const deleteManyRecordsByParams = async (name: string, id: any) =>
   await model[name].deleteMany(id);

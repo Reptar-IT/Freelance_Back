@@ -2,6 +2,13 @@ export interface ModelObject {
   [key: string]: any;
 }
 
+export interface Demo {
+  description: string;
+  amount: number;
+  status: string;
+  creator: string;
+}
+
 export interface Offer {
   description: string;
   amount: number;

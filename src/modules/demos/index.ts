@@ -1,13 +1,12 @@
 import { Application } from "express";
-
-import testsController from './testsController'
+import demosController from './demosController'
 
 export default {
-    name: 'Test',
+    name: 'Demo',
     register(app: Application) {
-        const moduleBaseUrl = '/tests';
+        const moduleBaseUrl = '/demos';
 
-        testsController.register(`${moduleBaseUrl}/test`, app)
+        demosController.register(`${moduleBaseUrl}`, app)
 
         app.use(`${moduleBaseUrl}/*`, (_req, res) => {
             res.status(404).end();
