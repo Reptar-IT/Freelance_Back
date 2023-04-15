@@ -27,7 +27,7 @@ const getAllRecordsByParams = async (name: string, id: any) => {
 
 const deleteRecordById = async (name: string, id: any) => {
   await model[name].findOneAndDelete(id);
-  return { code: 200, message: `${name} with ID ${id.id} has been deleted` };
+  return { code: 200, message: `${name} with ID ${id._id} has been deleted` };
 };
 
 const updateRecord = async (name: string, id: any, payload: any) => {
