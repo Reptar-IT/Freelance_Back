@@ -1,12 +1,10 @@
 import { constants as HTTP_CODES } from "http2";
 import { Offer } from "../../types/types";
 import { bidFieldSpec } from "./bidSpec";
-import {
-  modelName,
-  fieldSpecValidation,
-} from "../../crud/fieldSpecValidation";
+import { modelName, fieldSpecValidation } from "../../crud/fieldSpecValidation";
 import {
   createRecord,
+  updateRecord,
   getAllRecords,
   getRecordById,
   deleteRecordById,
@@ -16,7 +14,7 @@ import {
 
 const { project, bid } = modelName;
 
-export const create = async (record: Offer) => {
+export const create = async (record: Offer, reqType: string) => {
   const { jobId } = record;
   const jobs: any = await getRecordById(project, jobId);
   if (jobs.code)
@@ -25,7 +23,7 @@ export const create = async (record: Offer) => {
       message: `The Project ID ${jobId} Does not exist`,
     };
 
-  const validatedRecord = fieldSpecValidation(bidFieldSpec, record, "POST");
+  const validatedRecord = fieldSpecValidation(bidFieldSpec, record, reqType);
 
   return validatedRecord.errors
     ? { code: 400, errors: validatedRecord.errors }
@@ -61,6 +59,25 @@ export const getAll = async () => ({
   code: HTTP_CODES.HTTP_STATUS_OK,
   records: await getAllRecords(bid),
 });
+
+export const updateBidById = async (
+  id: string,
+  payload: Offer,
+  reqType: string
+) => {
+  const validatedRecord = await fieldSpecValidation(
+    bidFieldSpec,
+    payload,
+    reqType
+  );
+
+  return validatedRecord.errors
+    ? { code: 400, errors: validatedRecord.errors }
+    : {
+        code: HTTP_CODES.HTTP_STATUS_OK,
+        records: await updateRecord(bid, { _id: id }, validatedRecord),
+      };
+};
 
 export const deleteBidById = async (id: string) => {
   const record: any = await getRecordById(bid, id);
