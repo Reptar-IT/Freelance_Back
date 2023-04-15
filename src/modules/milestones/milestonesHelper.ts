@@ -1,28 +1,32 @@
 import { constants as HTTP_CODES } from "http2";
-import { milestoneFieldSpec } from "./milestoneSpec";
-import { fieldSpecValidation } from "../../utils/fieldSpecValidation";
-import {
-  createMilestone,
-  deleteManyMilestonesByJobId,
-  deleteMilestoneById,
-  getAllMilestones,
-  getJobById,
-  getMilestoneById,
-  getMilestonesByJobId,
-} from "../../utils/queries";
 import { Offer } from "../../types/types";
+import { milestoneFieldSpec } from "./milestoneSpec";
+import {
+  modelName,
+  fieldSpecValidation,
+} from "../../crud/fieldSpecValidation";
+import {
+  createRecord,
+  getAllRecords,
+  getRecordById,
+  getAllRecordsByParams,
+  deleteRecordById,
+  deleteManyRecordsByParams,
+} from "../../crud/crudProvider";
+
+const { project, milestone } = modelName;
 
 export const getAll = async () => ({
   code: HTTP_CODES.HTTP_STATUS_OK,
-  records: await getAllMilestones(),
+  records: await getAllRecords(milestone),
 });
 
 export const create = async (record: Offer) => {
   const { jobId } = record;
-  const jobs: any = await getJobById(jobId);
-  if (jobs.code)
+  const job: any = await getRecordById(project, jobId);
+  if (job.code)
     return {
-      code: jobs.code,
+      code: job.code,
       message: `The Project ID ${jobId} Does not exist`,
     };
 
@@ -36,35 +40,37 @@ export const create = async (record: Offer) => {
     ? { code: 400, errors: validatedRecord.errors }
     : {
         code: HTTP_CODES.HTTP_STATUS_OK,
-        records: await createMilestone(validatedRecord),
+        records: await createRecord(milestone, validatedRecord),
       };
 };
 
 export const getById = async (id: string) => {
-  const milestone: any = await getMilestoneById(id);
-  if (milestone.code) return milestone;
+  const record: any = await getRecordById(milestone, id);
+  if (record.code) return record;
 
-  return { code: HTTP_CODES.HTTP_STATUS_OK, records: milestone };
+  return { code: HTTP_CODES.HTTP_STATUS_OK, records: record };
 };
 
 export const getTasksByTaskId = async (id: string) => {
-  const milestones: any = await getMilestonesByJobId(id);
-  if (milestones.code) return milestones;
+  const milestoneRecords: any = await getAllRecordsByParams(milestone, {
+    jobId: id,
+  });
+  if (milestoneRecords.code) return milestoneRecords;
 
-  const jobs: any = await getJobById(id);
+  const jobs: any = await getRecordById(project, id);
 
   if (jobs.code) {
-    await deleteManyMilestonesByJobId({ id });
+    await deleteManyRecordsByParams(milestone, { jobId: id });
 
     return { code: jobs.code, message: `The Project ID ${id} No longer exist` };
   }
 
-  return { code: HTTP_CODES.HTTP_STATUS_OK, records: milestones };
+  return { code: HTTP_CODES.HTTP_STATUS_OK, records: milestoneRecords };
 };
 
 export const deleteTaskById = async (id: string) => {
-  const milestone: any = await getMilestoneById(id);
-  if (milestone.code) return milestone;
+  const record: any = await getRecordById(milestone, id);
+  if (record.code) return record;
 
-  return await deleteMilestoneById(id);
+  return await deleteRecordById(milestone, { _id: id });
 };

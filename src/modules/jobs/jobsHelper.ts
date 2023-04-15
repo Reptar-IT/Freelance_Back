@@ -1,17 +1,19 @@
 import { constants as HTTP_CODES } from "http2";
 import { Project } from "../../types/types";
 import { jobFieldSpec } from "./jobSpec";
-import { fieldSpecValidation } from "../../utils/fieldSpecValidation";
 import {
-  createJob,
-  getBidsByJobId,
-  getMilestonesByJobId,
-  getAllJobs,
-  getJobById,
-  deleteMilestoneByJobId,
-  deleteBidByJobId,
-  deleteOneJobById,
-} from "../../utils/queries";
+  modelName,
+  fieldSpecValidation,
+} from "../../crud/fieldSpecValidation";
+import {
+  createRecord,
+  getAllRecords,
+  getRecordById,
+  deleteRecordById,
+  getAllRecordsByParams,
+} from "../../crud/crudProvider";
+
+const { project, bid, milestone } = modelName;
 
 export const create = async (record: Project) => {
   const validatedRecord = fieldSpecValidation(jobFieldSpec, record, "POST");
@@ -20,22 +22,24 @@ export const create = async (record: Project) => {
     ? { code: 400, errors: validatedRecord.errors }
     : {
         code: HTTP_CODES.HTTP_STATUS_OK,
-        records: await createJob(validatedRecord),
+        records: await createRecord(project, validatedRecord),
       };
 };
 
 const addToJobs = async (record: any, id: string) => {
-  const bids: any = await getBidsByJobId(id);
-  if (bids.code) return bids;
+  const bidRecords: any = await getAllRecordsByParams(bid, { jobId: id });
+  if (bidRecords.code) return bidRecords;
 
-  bids.forEach((bid: any) => {
+  bidRecords.forEach((bid: any) => {
     record.bids.push(bid);
   });
 
-  const milestones: any = await getMilestonesByJobId(id);
-  if (milestones.code) return milestones;
+  const milestoneRecords: any = await getAllRecordsByParams(milestone, {
+    jobId: id,
+  });
+  if (milestoneRecords.code) return milestoneRecords;
 
-  milestones.forEach((milestone: any) => {
+  milestoneRecords.forEach((milestone: any) => {
     record.milestones.push(milestone);
   });
 
@@ -43,17 +47,17 @@ const addToJobs = async (record: any, id: string) => {
 };
 
 export const getById = async (id: string) => {
-  const jobs: any = await getJobById(id);
-  if (jobs.code) return jobs;
+  const record: any = await getRecordById(project, id);
+  if (record.code) return record;
 
   return {
     code: HTTP_CODES.HTTP_STATUS_OK,
-    records: await addToJobs(jobs, id),
+    records: await addToJobs(record, id),
   };
 };
 
 export const getAll = async () => {
-  const jobs: any = await getAllJobs();
+  const jobs: any = await getAllRecords(project);
 
   const jobRecords = await Promise.all(
     jobs.map(async (record: any) => {
@@ -67,19 +71,24 @@ export const getAll = async () => {
 };
 
 export const deleteJobById: any = async (id: string) => {
-  const jobs: any = await getJobById(id);
-  if (jobs.code) return jobs;
+  const jobRecords: any = await getRecordById(project, id);
+  if (jobRecords.code) return jobRecords;
 
-  const bids: any = await getBidsByJobId(id);
-  if (bids.code) return bids;
+  const bidRecords: any = await getAllRecordsByParams(bid, { jobId: id });
+  if (bidRecords.code) return bidRecords;
 
-  const milestones: any = await getMilestonesByJobId(id);
-  if (milestones.code) return milestones;
+  const milestoneRecords: any = await getAllRecordsByParams(milestone, {
+    jobId: id,
+  });
+  if (milestoneRecords.code) return milestoneRecords;
 
-  if (bids.length != 0) bids.forEach(async () => await deleteBidByJobId(id));
+  if (bidRecords.length != 0)
+    bidRecords.forEach(async () => await deleteRecordById(bid, { jobId: id }));
 
-  if (milestones.length != 0)
-    milestones.forEach(async () => await deleteMilestoneByJobId(id));
+  if (milestoneRecords.length != 0)
+    milestoneRecords.forEach(
+      async () => await deleteRecordById(milestone, { jobId: id })
+    );
 
-  return await deleteOneJobById(id);
+  return await deleteRecordById(project, { _id: id });
 };
