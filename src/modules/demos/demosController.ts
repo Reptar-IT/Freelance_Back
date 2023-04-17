@@ -43,8 +43,13 @@ export default {
 
     async function updateDemo(req: Request, res: Response) {
       try {
-        const { body: record, params } = req as any;
-        const { id } = params;
+        const { body: {record, address }, params: { id } } = req as any;
+
+        if (!(await authenticateUser(req.body)))
+          res.status(401).send({ message: "User authentication failed" });
+
+        // if address is not creator then return error
+
         const result: any = await updateDemoById(id, record, "PUT");
         const { code } = result;
 
@@ -57,8 +62,13 @@ export default {
 
     async function deleteDemo(req: Request, res: Response) {
       try {
-        const params = req.params as any;
-        const { id } = params;
+        const { body: { address }, params: { id } } = req as any;
+
+        if (!(await authenticateUser(req.body)))
+          res.status(401).send({ message: "User authentication failed" });
+
+        // if address is not creator then return error
+        
         const result: any = await deleteDemoById(id);
         const { code } = result;
 
