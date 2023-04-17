@@ -7,10 +7,6 @@ const tronWeb = new TronWeb({
 
 export async function authenticateUser(reqBody: any) {
   const { message, signature, address } = reqBody;
- 
-  return await tronWeb.trx.verifyMessageV2(
-    message,
-    signature,
-    address
-  );
+
+  return await tronWeb.trx.verifyMessageV2(message, signature, address);
 }

@@ -11,13 +11,15 @@ export default {
 
     async function createDemo(req: Request, res: Response) {
       try {
-        console.log(req.body);
         const { record, address } = req.body;
-        
+
         if (!(await authenticateUser(req.body)))
           res.status(401).send({ message: "User authentication failed" });
 
-        const result: any = await create({ ...record, creator: address }, "POST");
+        const result: any = await create(
+          { ...record, creator: address },
+          "POST"
+        );
         const { code } = result;
 
         res.status(code).send(result);

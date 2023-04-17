@@ -11,8 +11,8 @@ export const demoFieldSpec = {
     required: true,
   },
   status: {
-    default: 'PENDING',
-    validValues: ['PENDING', 'ACCEPTED'],
+    default: "PENDING",
+    validValues: ["PENDING", "ACCEPTED"],
     required: true,
     updatable: true,
   },
