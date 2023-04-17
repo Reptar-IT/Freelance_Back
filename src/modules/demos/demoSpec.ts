@@ -8,7 +8,6 @@ export const demoFieldSpec = {
     updatable: true,
   },
   creator: {
-    default: "Fast Bidder",
     required: true,
   },
   status: {
