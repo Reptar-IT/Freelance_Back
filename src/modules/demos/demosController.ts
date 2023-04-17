@@ -1,5 +1,5 @@
 import { Application, Request, Response } from "express";
-import { authenticateUser } from "../../utils/tronConnectBE";
+import { authenticateUser } from "../../utils/tronWebConnect";
 import { getAll, create, deleteDemoById, updateDemoById } from "./demosHelper";
 
 export default {
@@ -11,11 +11,15 @@ export default {
 
     async function createDemo(req: Request, res: Response) {
       try {
-        // if (!(await authenticateUser(req.body)))
-        //   res.status(401).send({ message: "User authentication failed" });
+        const { record, address } = req.body;
 
-        const { record, address: user } = req.body;
-        const result: any = await create(record, "POST");
+        if (!(await authenticateUser(req.body)))
+          res.status(401).send({ message: "User authentication failed" });
+
+        const result: any = await create(
+          { ...record, creator: address },
+          "POST"
+        );
         const { code } = result;
 
         res.status(code).send(result);

@@ -14,6 +14,9 @@ const env = cleanEnv(process.env, {
     DB_USER: str(),
     DB_PASSWORD: str(),
     DB_APP_NAME: str(),
+    TRON_GRID_MAIN_NET_FULL_NODE: str(),
+    TRON_GRID_TEST_NET_FULL_NODE: str(),
+    TRON_GRID_API_KEY: str(),
 });
 
 export const { DATABASE_URL, NODE_ENV, ORIGIN, PORT } = env;

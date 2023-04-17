@@ -8,12 +8,11 @@ export const demoFieldSpec = {
     updatable: true,
   },
   creator: {
-    default: "Fast Bidder",
     required: true,
   },
   status: {
-    default: 'PENDING',
-    validValues: ['PENDING', 'ACCEPTED'],
+    default: "PENDING",
+    validValues: ["PENDING", "ACCEPTED"],
     required: true,
     updatable: true,
   },

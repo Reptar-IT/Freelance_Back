@@ -31,8 +31,8 @@ export const fieldSpecValidation = (
       code: 400,
       errors: {
         invalidFields,
-        message: `Invalid${
-          requestType === "PUT" ? " or Non-Updatable" : ""
+        message: `Invalid ${
+          requestType === "PUT" ? "or Non-Updatable" : ""
         } fields in payload`,
       },
     };
