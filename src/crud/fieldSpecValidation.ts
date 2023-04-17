@@ -18,7 +18,7 @@ export const fieldSpecValidation = (
           conditionedSpecs: specFieldNames.filter(
             (fieldName) => fieldSpecifications[fieldName].updatable
           ),
-          payloadRecord: payload.record,
+          payloadRecord: payload,
         }
       : { conditionedSpecs: specFieldNames, payloadRecord: payload };
 

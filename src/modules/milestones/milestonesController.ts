@@ -1,4 +1,5 @@
 import { Application, Request, Response } from "express";
+import { authenticateUser } from "../../utils/tronWebConnect";
 
 import {
   getById,
@@ -20,8 +21,12 @@ export default {
 
     async function createTask(req: Request, res: Response) {
       try {
-        const { record } = req.body;
-        const result: any = await create(record);
+        const { record, address } = req.body;
+
+        if (!(await authenticateUser(req.body)))
+          res.status(401).send({ message: "User authentication failed" });
+
+        const result: any = await create({ ...record, creator: address });
         const { code } = result;
 
         res.status(code).send(result);
@@ -73,8 +78,13 @@ export default {
 
     async function updateMilestone(req: Request, res: Response) {
       try {
-        const { body: record, params } = req as any;
-        const { id } = params;
+        const { body: {record, address }, params: { id } } = req as any;
+
+        if (!(await authenticateUser(req.body)))
+          res.status(401).send({ message: "User authentication failed" });
+
+        // if address is not creator or employer then return error
+
         const result: any = await updateMilestoneById(id, record, "PUT");
         const { code } = result;
 
@@ -87,8 +97,13 @@ export default {
 
     async function deleteTask(req: Request, res: Response) {
       try {
-        const params = req.params as any;
-        const { id } = params;
+        const { body: { address }, params: { id } } = req as any;
+
+        if (!(await authenticateUser(req.body)))
+          res.status(401).send({ message: "User authentication failed" });
+
+        // if address is not creator or employer then return error
+        
         const result: any = await deleteTaskById(id);
         const { code } = result;
 

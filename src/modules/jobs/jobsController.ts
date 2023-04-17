@@ -1,4 +1,5 @@
 import { Application, Request, Response } from "express";
+import { authenticateUser } from "../../utils/tronWebConnect";
 
 import {
   getById,
@@ -18,8 +19,12 @@ export default {
 
     async function createJob(req: Request, res: Response) {
       try {
-        const { record } = req.body;
-        const result: any = await create(record, "POST");
+        const { record, address } = req.body;
+
+        if (!(await authenticateUser(req.body)))
+          res.status(401).send({ message: "User authentication failed" });
+
+        const result: any = await create({ ...record, creator: address }, "POST");
         const { code } = result;
 
         res.status(code).send(result);
@@ -57,8 +62,13 @@ export default {
 
     async function updateJob(req: Request, res: Response) {
       try {
-        const { body: record, params } = req as any;
-        const { id } = params;
+        const { body: {record, address }, params: { id } } = req as any;
+
+        if (!(await authenticateUser(req.body)))
+          res.status(401).send({ message: "User authentication failed" });
+
+        // if address is not creator or employer then return error
+
         const result: any = await updateJobById(id, record, "PUT");
         const { code } = result;
 
@@ -71,8 +81,13 @@ export default {
 
     async function deleteJob(req: Request, res: Response) {
       try {
-        const params = req.params as any;
-        const { id } = params;
+        const { body: { address }, params: { id } } = req as any;
+
+        if (!(await authenticateUser(req.body)))
+          res.status(401).send({ message: "User authentication failed" });
+
+        // if address is not creator or employer then return error
+
         const result: any = await deleteJobById(id);
         const { code } = result;
 
