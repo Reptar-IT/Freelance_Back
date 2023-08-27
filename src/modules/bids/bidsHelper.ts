@@ -1,7 +1,8 @@
 import { constants as HTTP_CODES } from "http2";
 import { Offer } from "../../types/types";
 import { bidFieldSpec } from "./bidSpec";
-import { modelName, fieldSpecValidation } from "../../crud/fieldSpecValidation";
+import { fieldSpecValidation } from "../../crud/fieldSpecValidation";
+import { modelName } from "../../crud/models";
 import {
   createRecord,
   updateRecord,

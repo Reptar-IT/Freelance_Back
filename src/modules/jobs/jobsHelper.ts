@@ -1,7 +1,8 @@
 import { constants as HTTP_CODES } from "http2";
 import { Project } from "../../types/types";
 import { jobFieldSpec } from "./jobSpec";
-import { modelName, fieldSpecValidation } from "../../crud/fieldSpecValidation";
+import { fieldSpecValidation } from "../../crud/fieldSpecValidation";
+import { modelName } from "../../crud/models";
 import {
   createRecord,
   updateRecord,

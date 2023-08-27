@@ -1,10 +1,3 @@
-export const modelName = {
-  demo: "Demo",
-  bid: "Bid",
-  project: "Job",
-  milestone: "Milestone",
-};
-
 export const fieldSpecValidation = (
   fieldSpecifications: any,
   payload: any,
